@@ -60,3 +60,30 @@ def plot_scatter(x_axis, y_axis, y_axis_robust):
     plt.tight_layout()
     # plt.show()
     plt.savefig('failure-percent.png')
+
+
+def plot_all(probs, res_base, res_proto_voter):
+    for p in probs:
+        # print(str(p))
+        k_filter = [k for k in list(res_base.keys()) if k.split(",")[-1] == str(p)]
+        # print(k_filter)
+
+        x_axis = [float(k.split(",")[0]) for k in k_filter]
+        y_axis = [float(k.split(",")[1]) for k in k_filter]
+        z_axis = [res_base[k] for k in k_filter]
+        z_axis_robust = [res_proto_voter[k] for k in k_filter]
+
+        plot_3d_scatter(x_axis, y_axis, z_axis, z_axis_robust, p)
+
+
+def plot_all_equal(probs, res_base, res_proto_voter):
+    # for p in probs:
+    #     print(str(p))
+    #     k_filter = [k for k in list(res_base.keys()) if k == str(p)]
+    #     print(k_filter)
+
+    x_axis = [float(k) for k in res_base.keys()]
+    y_axis = [v for v in res_base.values()]
+    y_axis_robust = [v for v in res_proto_voter.values()]
+
+    plot_scatter(x_axis, y_axis, y_axis_robust)
