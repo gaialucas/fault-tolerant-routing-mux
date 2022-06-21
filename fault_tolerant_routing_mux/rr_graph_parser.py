@@ -18,12 +18,24 @@ from collections import defaultdict
 
 
 class RRGraphParser():
+    """Class to parse Routing Resource Graph files.
+
+    This class implements a VERY naive approach. It does not validate the full
+    structure of the RR Graph file. It searches for the tags we need and parse
+    every subtag within. It is more memory efficient than loading the whole
+    XML file into memory as we process line by line.
+
+    :param file: The rr_graph file to be parsed
+    :param mux_dict: Dictionary of routing multiplexer output (source) and input (sink) node.
+    """
 
     def __init__(self, rr_graph_file):
+        """Init parser with target rr_graph file."""
         self.file = rr_graph_file
         self.mux_dict = defaultdict(list)
 
     def add_sink_source_node(self, line):
+        """Parse edge tag and return a source: [sinks] dictionary."""
         extracted_nodes = re.search(' (.+) ', line).group(1)
         for node in extracted_nodes.split():
             # print(node)
@@ -35,6 +47,7 @@ class RRGraphParser():
         self.mux_dict[source_node].append(sink_node)
 
     def parse_switches(self, rr_graph_file):
+        """Iterate over switch tags to find id used in rr_egdes by routing mux."""
         for line in rr_graph_file:
             if line.startswith("<switch "):
                 if "name=\"0\"" in line:
@@ -43,6 +56,10 @@ class RRGraphParser():
                 return
 
     def parse_rr_edges(self, rr_graph_file):
+        """Iterate over edge tags and parse routing muxes.
+
+        An edge is only parsed if mux id matches self.target_id.
+        """
         for line in rr_graph_file:
             if line.startswith("<edge "):
                 if f"switch_id=\"{self.target_id}\"" in line:
@@ -51,6 +68,7 @@ class RRGraphParser():
                 return
 
     def parse(self):
+        """Parse rr_graph file with a naive approach."""
         with open(self.file) as f:
             for line in f:
                 if line == "<switches>\n":
