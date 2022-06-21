@@ -1,0 +1,12 @@
+<switches>
+<switch id="0" name="0" type="mux"><timing Tdel="1.10200002e-10"/>
+<sizing buf_size="11.9105997" mux_trans_size="1.21493995"/>
+</switch>
+</switches>
+<rr_edges>
+<edge sink_node="24678" src_node="10" switch_id="0"></edge>
+<edge sink_node="24680" src_node="10" switch_id="0"></edge>
+<edge sink_node="24681" src_node="10" switch_id="0"></edge>
+<edge sink_node="24682" src_node="10" switch_id="0"></edge>
+<edge sink_node="24684" src_node="10" switch_id="0"></edge>
+</rr_edges>
