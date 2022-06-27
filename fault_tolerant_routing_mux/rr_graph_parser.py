@@ -35,7 +35,7 @@ class RRGraphParser():
         :param tree: RR Graph XML tree
         :self.switchbox_id: id of structure corresponding to the routing muxes in the XML
         :self.cblock_id: id of structure corresponding to the connection block in the XML
-        :param mux_dict: Dictionary of routing multiplexers indexed by mux src_node
+        :param mux_dict: Dictionary of routing multiplexers indexed by mux sink_node
         """
         self.tree = ET.parse(rr_graph_file)
         self.mux_dict = defaultdict(list)
@@ -59,7 +59,7 @@ class RRGraphParser():
             if edge.attrib['switch_id'] == self.switchbox_id:
                 sink_node = edge.attrib['sink_node']
                 src_node = edge.attrib['src_node']
-                self.mux_dict[int(src_node)].append(int(sink_node))
+                self.mux_dict[int(sink_node)].append(int(src_node))
 
     def get_mux_dict(self):
         """Return dictionary of mux nodes."""

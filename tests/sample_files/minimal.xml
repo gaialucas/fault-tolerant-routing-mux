@@ -5,10 +5,10 @@
 </switch>
 </switches>
 <rr_edges>
-<edge sink_node="24678" src_node="10" switch_id="0"></edge>
-<edge sink_node="24680" src_node="10" switch_id="0"></edge>
-<edge sink_node="24681" src_node="10" switch_id="0"></edge>
-<edge sink_node="24682" src_node="10" switch_id="0"></edge>
-<edge sink_node="24684" src_node="10" switch_id="0"></edge>
+<edge sink_node="10" src_node="24678" switch_id="0"></edge>
+<edge sink_node="10" src_node="24680" switch_id="0"></edge>
+<edge sink_node="10" src_node="24681" switch_id="0"></edge>
+<edge sink_node="10" src_node="24682" switch_id="0"></edge>
+<edge sink_node="10" src_node="24684" switch_id="0"></edge>
 </rr_edges>
 </rr_graph>
