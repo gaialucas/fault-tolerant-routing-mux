@@ -20,12 +20,12 @@ from .memristor_errors import Errors, RandomErrorGen
 class RoutingMuxBlock():
     """Representation of a mux block."""
 
-    def __init__(self, ctrCellList) -> None:
+    def __init__(self, src_node_list, sink_node, ctrCellList) -> None:
         """Initialize block as error-free and with all valid inputs."""
-        self.ctrCellList = ctrCellList
-        # self.dependencyDict = dependencyDict
+        self.src_node_list = src_node_list
+        self.sink_node = sink_node
+        self.ctrCellList = ctrCellList[:len(src_node_list)]
         self.blockUnusable = False
-        self.invalidInputs = None
 
     def setInvalidInputs(self, invalidInputs) -> None:
         """Set invalid inputs of the block."""
@@ -51,22 +51,32 @@ class RoutingMuxBlock():
         if Errors.UD in memCellErrors:
             self.blockUnusable = True
             # print("UD in block")
-            return
         elif memCellErrors.count(Errors.SA1) > 1:
             self.blockUnusable = True
             # print("Multiple SA1 in block")
-            return
-
-        if self.invalidInputs:
-            for i in range(len(memCellErrors)):
-                memCellErrors[i] = Errors.SA0 if self.invalidInputs[i] else memCellErrors[i]
-        if memCellErrors.count(Errors.SA0) == len(self.ctrCellList):
-            self.blockUnusable = True
-            # print("No path available")
 
     def getBlockUnusable(self):
         """Return global usability of block."""
         return self.blockUnusable
+
+    def get_defect_edges(self):
+        if self.blockUnusable:
+            defect_edges = self.src_node_list
+            return defect_edges
+
+        memCellErrors = [m.getCellError() for m in self.ctrCellList]
+        if Errors.SA1 in memCellErrors:
+            active_source = memCellErrors.index(Errors.SA1)
+            # all but SA1 are defect
+            defect_edges = self.src_node_list.copy()
+            defect_edges.pop(active_source)
+            return defect_edges
+
+        defect_edges = [self.src_node_list[i]
+                        for i in range(len(self.src_node_list))
+                        if self.ctrCellList[i].getCellError() == Errors.SA0]
+
+        return defect_edges
 
     def debugBlock(self):
         """Debug utility - deprecated after tests implemented."""
@@ -82,18 +92,54 @@ class RoutingMuxBlock():
 class RoutingMux():
     """Representation of a routing multiplexer with variable stage number and size."""
 
-    def __init__(self, n_stages, stage_inputs, cell_type) -> None:
+    def __init__(self, sink_node, src_node_list, cell_type) -> None:
         """Initialize error-free, all inputs valid mux with a given control cell architecture.
 
         The mux consists of n stages of a given cell controlling each input.
+
+        :param sink_node: Sink node of the routing mux
+        :param src_node_list: List of source nodes of the routing mux
+        :param cell_type: Cell architecture to be used in simulation
+        :param defect_sink_list: List of unusable sink nodes after defect simulation
         """
-        stage_inputs.append(1)  # add output node
-        self.muxUnusable = False
-        self.stages = []
-        for n in range(n_stages):
-            cell_list = [cell_type() for i in range(stage_inputs[n])]
-            curr_stage = [RoutingMuxBlock(cell_list) for i in range(stage_inputs[n+1])]
-            self.stages.append(curr_stage)
+        self.sink_node = sink_node
+        self.src_node_list = src_node_list
+        self.optimal_block_size = self.compute_num_stages()
+        self.build_mux(cell_type)
+
+    def compute_num_stages(self):
+        """Compute optimal block size for a 2-stage routing mux."""
+        mux_size = len(self.src_node_list)
+        block_size = mux_size
+        n_mem_cells = mux_size
+        partial_block = False
+
+        for new_block_size in range(mux_size):
+            partial_block = (mux_size % new_block_size) == 0
+            new_n_mem_cell = new_block_size + (mux_size // new_block_size) + partial_block
+
+            if (new_n_mem_cell < n_mem_cells):
+                n_mem_cells = new_n_mem_cell
+                block_size = new_block_size
+
+        return block_size
+
+    def build_mux(self, cell_type):
+        """Build a 2-stage routing mux."""
+        n_blocks = len(self.src_node_list) // self.optimal_block_size
+        first_stage_cells = [cell_type() for i in range(self.optimal_block_size)]
+        second_stage_cells = [cell_type() for i in range(n_blocks)]
+        for n in range(n_blocks):
+            start_input = n * self.optimal_block_size
+            end_input = start_input + self.optimal_block_size
+            rmb = RoutingMuxBlock(
+                src_node_list=self.src_node_list[start_input:end_input],
+                sink_node=None,
+                cell_list=first_stage_cells
+            )
+            self.mux_block_list.append(rmb)
+
+        self.cell_list = first_stage_cells + second_stage_cells
 
     def setErrors(self, reg):
         """Set error for all cells in a block of each stage."""
