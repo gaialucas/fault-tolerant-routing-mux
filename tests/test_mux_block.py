@@ -47,14 +47,14 @@ def test_single_sa1():
     ctr_cell_list[3].setErrors(Errors.FF, Errors.SA0)
     rmb = RoutingMuxBlock(TEST_SRC_NODE_LIST, TEST_SINK_NODE, ctr_cell_list)
     rmb.computeBlockError()
-    assert rmb.get_defect_edges()  == [0, 1, 2, 4, 5, 6]  # all source nodes
+    assert rmb.get_defect_edges()  == [0, 1, 2, 4, 5, 6]  # all source nodes but sa1
 
 def test_single_sa0():
     ctr_cell_list = [MemCell() for i in range(7)]
     ctr_cell_list[4].setErrors(Errors.FF, Errors.SA1)
     rmb = RoutingMuxBlock(TEST_SRC_NODE_LIST, TEST_SINK_NODE, ctr_cell_list)
     rmb.computeBlockError()
-    assert rmb.get_defect_edges()  == [4]  # all source nodes
+    assert rmb.get_defect_edges()  == [4]
 
 def test_single_sa0():
     ctr_cell_list = [MemCell() for i in range(7)]
@@ -62,4 +62,4 @@ def test_single_sa0():
     ctr_cell_list[6].setErrors(Errors.FF, Errors.SA1)
     rmb = RoutingMuxBlock(TEST_SRC_NODE_LIST, TEST_SINK_NODE, ctr_cell_list)
     rmb.computeBlockError()
-    assert rmb.get_defect_edges()  == [5, 6]  # all source nodes
+    assert rmb.get_defect_edges()  == [5, 6]
