@@ -13,7 +13,7 @@
 # limitations under the License.
 # =============================================================================
 """Module to parse rr_graph files into data structures."""
-import re
+import xml.etree.ElementTree as ET
 from collections import defaultdict
 
 
@@ -30,53 +30,37 @@ class RRGraphParser():
     """
 
     def __init__(self, rr_graph_file):
-        """Init parser with target rr_graph file."""
-        self.file = rr_graph_file
+        """Load a given rr_graph file and parse switches and edges.
+
+        :param tree: RR Graph XML tree
+        :self.switchbox_id: id of structure corresponding to the routing muxes in the XML
+        :self.cblock_id: id of structure corresponding to the connection block in the XML
+        :param mux_dict: Dictionary of routing multiplexers indexed by mux src_node
+        """
+        self.tree = ET.parse(rr_graph_file)
         self.mux_dict = defaultdict(list)
+        self.parse_switches()
+        self.parse_rr_edges()
 
-    def add_sink_source_node(self, line):
-        """Parse edge tag and return a source: [sinks] dictionary."""
-        extracted_nodes = re.search(' (.+) ', line).group(1)
-        for node in extracted_nodes.split():
-            # print(node)
-            if "sink" in node:
-                sink_node = int(node.split('=')[1].strip('"'))
-            if "src" in node:
-                source_node = int(node.split('=')[1].strip('"'))
+    def parse_switches(self):
+        """Store the respective id of connection blocks and routing muxes based on switch name."""
+        for s in self.tree.find('switches'):
+            if (s.attrib['name'] == '0'):
+                self.switchbox_id = s.attrib['id']
+            elif (s.attrib['name'] == 'ipin_cblock'):
+                self.cblock_id = s.attrib['id']
 
-        self.mux_dict[source_node].append(sink_node)
-
-    def parse_switches(self, rr_graph_file):
-        """Iterate over switch tags to find id used in rr_egdes by routing mux."""
-        for line in rr_graph_file:
-            if line.startswith("<switch "):
-                if "name=\"0\"" in line:
-                    self.target_id = re.search('id="(.+?)"', line).group(1)
-            elif line == "</switches>\n":
-                return
-
-    def parse_rr_edges(self, rr_graph_file):
+    def parse_rr_edges(self):
         """Iterate over edge tags and parse routing muxes.
 
         An edge is only parsed if mux id matches self.target_id.
         """
-        for line in rr_graph_file:
-            if line.startswith("<edge "):
-                if f"switch_id=\"{self.target_id}\"" in line:
-                    self.add_sink_source_node(line)
-            elif line == "</rr_edges>\n":
-                return
+        for edge in self.tree.find('rr_edges'):
+            if edge.attrib['switch_id'] == self.switchbox_id:
+                sink_node = edge.attrib['sink_node']
+                src_node = edge.attrib['src_node']
+                self.mux_dict[int(src_node)].append(int(sink_node))
 
-    def parse(self):
-        """Parse rr_graph file with a naive approach."""
-        with open(self.file) as f:
-            for line in f:
-                if line == "<switches>\n":
-                    # print(line)
-                    self.parse_switches(f)
-                elif line == "<rr_edges>\n":
-                    # print(line)
-                    self.parse_rr_edges(f)
-                    break
-
+    def get_mux_dict(self):
+        """Return dictionary of mux nodes."""
         return self.mux_dict

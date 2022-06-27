@@ -1,3 +1,4 @@
+<rr_graph>
 <switches>
 <switch id="0" name="__vpr_delayless_switch__" type="mux"><timing/>
 <sizing buf_size="0" mux_trans_size="0"/>
@@ -36,3 +37,4 @@
 <edge sink_node="24702" src_node="13" switch_id="2"></edge>
 <edge sink_node="24704" src_node="13" switch_id="2"></edge>
 </rr_edges>
+</rr_graph>

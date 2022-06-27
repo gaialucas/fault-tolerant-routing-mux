@@ -13,6 +13,7 @@
 # limitations under the License.
 # =============================================================================
 """Test suite for the routing resource graph parser."""
+from xml.etree.ElementTree import ParseError
 import pytest
 import os
 from fault_tolerant_routing_mux.rr_graph_parser import RRGraphParser
@@ -23,14 +24,15 @@ def test_no_file():
         rrgp = RRGraphParser()
 
 def test_empty_file():
-    rrgp = RRGraphParser(os.path.join(BASE_DIR, "empty.xml"))
-    mux_dict = rrgp.parse()
-    assert not mux_dict
+    with pytest.raises(ParseError):
+        rrgp = RRGraphParser(os.path.join(BASE_DIR, "empty.xml"))
+        mux_dict = rrgp.get_mux_dict()
+        assert not mux_dict
 
 def test_minimal_file():
     rrgp = RRGraphParser(os.path.join(BASE_DIR, "minimal.xml"))
     expected_mux_dict = {10: [24678, 24680, 24681, 24682, 24684]}
-    mux_dict = rrgp.parse()
+    mux_dict = rrgp.get_mux_dict()
     for k in mux_dict:
         assert mux_dict[k] == expected_mux_dict[k]
     # assert mux_dict.values() == expected_mux_dict.values()
@@ -41,6 +43,6 @@ def test_sample_file():
         10: [24670, 24672, 24673, 24674, 24676, 24678, 24680, 24681, 24682, 24684],
         13: [24673, 24681, 24689, 24696, 24697, 24698, 24700, 24702, 24704]
     }
-    mux_dict = rrgp.parse()
+    mux_dict = rrgp.get_mux_dict()
     for k in mux_dict:
         assert mux_dict[k] == expected_mux_dict[k]
