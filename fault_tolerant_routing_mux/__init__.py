@@ -13,3 +13,9 @@
 # limitations under the License.
 # =============================================================================
 """Init package."""
+
+from fault_tolerant_routing_mux import main
+from fault_tolerant_routing_mux import control_cell
+from fault_tolerant_routing_mux import memristor_errors
+from fault_tolerant_routing_mux import mux
+from fault_tolerant_routing_mux import plotter
