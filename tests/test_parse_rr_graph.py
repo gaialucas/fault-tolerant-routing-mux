@@ -46,3 +46,16 @@ def test_sample_file():
     mux_dict = rrgp.get_mux_dict()
     for k in mux_dict:
         assert mux_dict[k] == expected_mux_dict[k]
+
+def test_update_rr_graph():
+    rrgp = RRGraphParser(os.path.join(BASE_DIR, "simple.xml"))
+    rrgp.update_rr_graph(os.path.join(BASE_DIR, 'defect_simple.xml'), {10: [24670, 24680, 24681], 13: [24689, 24698]})
+    defect_rrgp = RRGraphParser(os.path.join(BASE_DIR, 'defect_simple.xml'))
+    expected_mux_dict = {
+        10: [24672, 24673, 24674, 24676, 24678, 24682, 24684],
+        13: [24673, 24681, 24696, 24697, 24700, 24702, 24704]
+    }
+    mux_dict = defect_rrgp.get_mux_dict()
+    for k in mux_dict:
+        assert mux_dict[k] == expected_mux_dict[k]
+    os.remove(os.path.join(BASE_DIR, 'defect_simple.xml'))

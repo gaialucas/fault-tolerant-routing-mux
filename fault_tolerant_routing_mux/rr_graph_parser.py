@@ -64,3 +64,21 @@ class RRGraphParser():
     def get_mux_dict(self):
         """Return dictionary of mux nodes."""
         return self.mux_dict
+
+    def update_rr_graph(self, defect_filename, defect_edges_dict):
+        defect_edges = []
+        for sink, sources in defect_edges_dict.items():
+            for source in sources:
+                defect_edges.append((source, sink))
+
+        # Use findall to avoid removal during traversal
+        all_rr_edges = self.tree.find('rr_edges')
+        for edge in all_rr_edges.findall('edge'):
+            print(edge.attrib)
+            if edge.attrib['switch_id'] == self.switchbox_id:
+                sink_node = int(edge.attrib['sink_node'])
+                src_node = int(edge.attrib['src_node'])
+                if (src_node, sink_node) in defect_edges:
+                    all_rr_edges.remove(edge)
+
+        self.tree.write(defect_filename)
