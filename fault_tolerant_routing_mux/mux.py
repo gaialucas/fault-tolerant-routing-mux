@@ -179,6 +179,9 @@ class RoutingMux():
 
         return {self.sink_node: set(defect_edges)}
 
+    def get_cell_errors(self):
+        return [cell.getCellError() for cell in self.cell_list]
+
     def getMuxUnusable(self):
         """Return if mux is usable for routing or not."""
         return self.muxUnusable
