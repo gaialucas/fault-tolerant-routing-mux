@@ -38,55 +38,55 @@ def test_build_mux():
 
 def test_no_defect():
     rm = RoutingMux(TEST_SINK_NODE, TEST_SRC_NODE_LIST, MemCell)
-    rm.computeBlockErrors()
+    rm.compute_block_errors()
     assert rm.get_defect_edges() == {}
 
 def test_first_stage_sa0():
     rm = RoutingMux(TEST_SINK_NODE, TEST_SRC_NODE_LIST, MemCell)
-    rm.cell_list[0].setErrors(Errors.FF, Errors.SA1)
-    rm.computeBlockErrors()
+    rm.cell_list[0].set_errors(Errors.FF, Errors.SA1)
+    rm.compute_block_errors()
     assert rm.get_defect_edges() == {20: {0, 4, 8, 12}}
 
 def test_second_stage_sa0():
     rm = RoutingMux(TEST_SINK_NODE, TEST_SRC_NODE_LIST, MemCell)
-    rm.cell_list[4].setErrors(Errors.FF, Errors.SA1)
-    rm.computeBlockErrors()
+    rm.cell_list[4].set_errors(Errors.FF, Errors.SA1)
+    rm.compute_block_errors()
     assert rm.get_defect_edges() == {20: {0, 1, 2, 3}}
 
 def test_first_stage_sa1():
     rm = RoutingMux(TEST_SINK_NODE, TEST_SRC_NODE_LIST, MemCell)
-    rm.cell_list[2].setErrors(Errors.FF, Errors.SA0)
-    rm.computeBlockErrors()
+    rm.cell_list[2].set_errors(Errors.FF, Errors.SA0)
+    rm.compute_block_errors()
     assert rm.get_defect_edges() == {20: {0, 1, 3, 4, 5, 7, 8, 9, 11, 12, 13, 15}}
 
 def test_second_stage_sa1():
     rm = RoutingMux(TEST_SINK_NODE, TEST_SRC_NODE_LIST, MemCell)
-    rm.cell_list[6].setErrors(Errors.FF, Errors.SA0)
-    rm.computeBlockErrors()
+    rm.cell_list[6].set_errors(Errors.FF, Errors.SA0)
+    rm.compute_block_errors()
     assert rm.get_defect_edges() == {20: {0, 1, 2, 3, 4, 5, 6, 7, 12, 13, 14, 15}}
 
 def test_first_stage_multiple_sa1():
     rm = RoutingMux(TEST_SINK_NODE, TEST_SRC_NODE_LIST, MemCell)
-    rm.cell_list[1].setErrors(Errors.FF, Errors.SA0)
-    rm.cell_list[3].setErrors(Errors.FF, Errors.SA0)
-    rm.computeBlockErrors()
+    rm.cell_list[1].set_errors(Errors.FF, Errors.SA0)
+    rm.cell_list[3].set_errors(Errors.FF, Errors.SA0)
+    rm.compute_block_errors()
     assert rm.get_defect_edges() == {20: {i for i in range(16)}}
 
 def test_second_stage_multiple_sa1():
     rm = RoutingMux(TEST_SINK_NODE, TEST_SRC_NODE_LIST, MemCell)
-    rm.cell_list[5].setErrors(Errors.FF, Errors.SA0)
-    rm.cell_list[7].setErrors(Errors.FF, Errors.SA0)
-    rm.computeBlockErrors()
+    rm.cell_list[5].set_errors(Errors.FF, Errors.SA0)
+    rm.cell_list[7].set_errors(Errors.FF, Errors.SA0)
+    rm.compute_block_errors()
     assert rm.get_defect_edges() == {20: {i for i in range(16)}}
 
 def test_first_stage_ud():
     rm = RoutingMux(TEST_SINK_NODE, TEST_SRC_NODE_LIST, MemCell)
-    rm.cell_list[1].setErrors(Errors.FF, Errors.UD)
-    rm.computeBlockErrors()
+    rm.cell_list[1].set_errors(Errors.FF, Errors.UD)
+    rm.compute_block_errors()
     assert rm.get_defect_edges() == {20: {i for i in range(16)}}
 
 def test_second_stage_ud():
     rm = RoutingMux(TEST_SINK_NODE, TEST_SRC_NODE_LIST, MemCell)
-    rm.cell_list[5].setErrors(Errors.FF, Errors.UD)
-    rm.computeBlockErrors()
+    rm.cell_list[5].set_errors(Errors.FF, Errors.UD)
+    rm.compute_block_errors()
     assert rm.get_defect_edges() == {20: {i for i in range(16)}}

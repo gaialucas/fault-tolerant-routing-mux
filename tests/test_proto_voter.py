@@ -29,18 +29,18 @@ def test_base_arch_ff():
     cce = [Errors.FF, Errors.FF]
 
     # mc FF, cc FF
-    test_cell.setErrors(mce, cce)
+    test_cell.set_errors(mce, cce)
     assert test_cell.getCellError() == Errors.FF
 
     # mc FF, cc SA1
     cce = [Errors.SA1, Errors.FF]
-    test_cell.setErrors(mce, cce)
+    test_cell.set_errors(mce, cce)
     assert test_cell.getCellError() == Errors.FF
 
     # mc SA1, cc FF
     mce = [Errors.SA1, Errors.FF]
     cce = [Errors.FF, Errors.FF]
-    test_cell.setErrors(mce, cce)
+    test_cell.set_errors(mce, cce)
     assert test_cell.getCellError() == Errors.FF
 
 def test_base_arch_sa0():
@@ -49,47 +49,47 @@ def test_base_arch_sa0():
     # mc FF, cc SA0
     mce = [Errors.FF, Errors.FF]
     cce = [Errors.SA0, Errors.FF]
-    test_cell.setErrors(mce, cce)
+    test_cell.set_errors(mce, cce)
     assert test_cell.getCellError() == Errors.SA0
 
     # mc FF, cc UD
     cce = [Errors.UD, Errors.FF]
-    test_cell.setErrors(mce, cce)
+    test_cell.set_errors(mce, cce)
     assert test_cell.getCellError() == Errors.SA0
 
     # mc SA0, cc UD
     mce = [Errors.SA0, Errors.FF]
-    test_cell.setErrors(mce, cce)
+    test_cell.set_errors(mce, cce)
     assert test_cell.getCellError() == Errors.SA0
 
     # mc SA0, cc SA1
     cce = [Errors.SA1, Errors.FF]
-    test_cell.setErrors(mce, cce)
+    test_cell.set_errors(mce, cce)
     assert test_cell.getCellError() == Errors.SA0
 
     # mc SA0, cc FF
     cce = [Errors.FF, Errors.FF]
-    test_cell.setErrors(mce, cce)
+    test_cell.set_errors(mce, cce)
     assert test_cell.getCellError() == Errors.SA0
 
     # mc SA0, cc SA0
     cce = [Errors.SA0, Errors.FF]
-    test_cell.setErrors(mce, cce)
+    test_cell.set_errors(mce, cce)
     assert test_cell.getCellError() == Errors.SA0
 
     # mc SA1, cc SA0
     mce = [Errors.SA1, Errors.FF]
-    test_cell.setErrors(mce, cce)
+    test_cell.set_errors(mce, cce)
     assert test_cell.getCellError() == Errors.SA0
 
     # mc UD, cc SA0
     mce = [Errors.UD, Errors.FF]
-    test_cell.setErrors(mce, cce)
+    test_cell.set_errors(mce, cce)
     assert test_cell.getCellError() == Errors.SA0
 
     # mc UD, cc FF
     cce = [Errors.FF, Errors.FF]
-    test_cell.setErrors(mce, cce)
+    test_cell.set_errors(mce, cce)
     assert test_cell.getCellError() == Errors.SA0
 
 
@@ -99,7 +99,7 @@ def test_base_arch_sa1():
     # mc SA1, cc SA1
     mce = [Errors.SA1, Errors.FF]
     cce = [Errors.SA1, Errors.FF]
-    test_cell.setErrors(mce, cce)
+    test_cell.set_errors(mce, cce)
     assert test_cell.getCellError() == Errors.SA1
 
 def test_base_arch_ud():
@@ -108,15 +108,15 @@ def test_base_arch_ud():
     # mc SA1, cc UD
     mce = [Errors.SA1, Errors.FF]
     cce = [Errors.UD, Errors.FF]
-    test_cell.setErrors(mce, cce)
+    test_cell.set_errors(mce, cce)
     assert test_cell.getCellError() == Errors.UD
 
     # mc UD, cc UD
     mce = [Errors.UD, Errors.FF]
-    test_cell.setErrors(mce, cce)
+    test_cell.set_errors(mce, cce)
     assert test_cell.getCellError() == Errors.UD
 
     # mc UD, cc SA1
     cce = [Errors.SA1, Errors.FF]
-    test_cell.setErrors(mce, cce)
+    test_cell.set_errors(mce, cce)
     assert test_cell.getCellError() == Errors.UD

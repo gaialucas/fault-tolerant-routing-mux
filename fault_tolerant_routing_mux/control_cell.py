@@ -32,7 +32,7 @@ class MemCell():
         self.pullDownMemristor = Errors.FF
         self.cellError = Errors.FF
 
-    def computeCellError(self) -> None:
+    def compute_cell_error(self) -> None:
         """Compute global cel error from each memristor error."""
         if (self.pullUpMemristor == Errors.UD) or (self.pullDownMemristor == Errors.UD):
             self.cellError = Errors.UD
@@ -49,11 +49,11 @@ class MemCell():
         else:  # Pull-Down is FF, cell error is the same as Pull-Up
             self.cellError = self.pullUpMemristor
 
-    def setErrors(self, pullUpError, pullDownError) -> None:
+    def set_errors(self, pullUpError, pullDownError) -> None:
         """Set error for memristors in cell and compute global cell error."""
         self.pullUpMemristor = pullUpError
         self.pullDownMemristor = pullDownError
-        self.computeCellError()
+        self.compute_cell_error()
 
     def getCellError(self):
         """Return the cell error."""
@@ -73,13 +73,13 @@ class ProtoVoterCell():
         self.ctrCell = MemCell()
         self.cellError = Errors.FF
 
-    def setErrors(self, mainCellErrors, crtCellErrors):
+    def set_errors(self, mainCellErrors, crtCellErrors):
         """Set error for each memory cell and compute global error."""
-        self.mainCell.setErrors(*mainCellErrors)
-        self.ctrCell.setErrors(*crtCellErrors)
-        self.computeCellError()
+        self.mainCell.set_errors(*mainCellErrors)
+        self.ctrCell.set_errors(*crtCellErrors)
+        self.compute_cell_error()
 
-    def computeCellError(self):
+    def compute_cell_error(self):
         """Compute global control cell error."""
         mainCellError = self.mainCell.getCellError()
         ctrCellError = self.ctrCell.getCellError()

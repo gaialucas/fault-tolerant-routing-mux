@@ -19,12 +19,12 @@ random.seed(42)
 
 # Possible errors regarding a Memristor
 class Errors():
-    """Error codes for possible errors in a memristor.
+    """Error codes for possible defects in a memristor.
 
     FF: Free of Failure
     SA0: Stuck At 0
     SA0: Stuck At 1
-    UD: UnDefined error
+    UD: UnDefined behaviour
     """
 
     FF, SA0, SA1, UD = range(4)
@@ -40,7 +40,7 @@ class RandomErrorGen():
     reg = RandomErrorGen(pSA0=0, pSA1=0, pUD=0)
     """
 
-    def __init__(self, pSA0=0, pSA1=0, pUD=0) -> None:
+    def __init__(self, pSA0: float = 0., pSA1: float = 0., pUD: float = 0.) -> None:
         """Init the error distribution."""
         self.pUD = pUD
         self.pSA0 = pUD + pSA0

@@ -29,37 +29,37 @@ def test_no_failure():
 
 def test_ud_in_block():
     ctr_cell_list = [MemCell() for i in range(7)]
-    ctr_cell_list[0].setErrors(Errors.UD, Errors.UD)
+    ctr_cell_list[0].set_errors(Errors.UD, Errors.UD)
     rmb = RoutingMuxBlock(TEST_SRC_NODE_LIST, TEST_SINK_NODE, ctr_cell_list)
-    rmb.computeBlockError()
+    rmb.compute_block_error()
     assert rmb.get_defect_edges()  == TEST_SRC_NODE_LIST  # all source nodes
 
 def test_multiple_sa1():
     ctr_cell_list = [MemCell() for i in range(7)]
-    ctr_cell_list[1].setErrors(Errors.FF, Errors.SA0)
-    ctr_cell_list[2].setErrors(Errors.FF, Errors.SA0)
+    ctr_cell_list[1].set_errors(Errors.FF, Errors.SA0)
+    ctr_cell_list[2].set_errors(Errors.FF, Errors.SA0)
     rmb = RoutingMuxBlock(TEST_SRC_NODE_LIST, TEST_SINK_NODE, ctr_cell_list)
-    rmb.computeBlockError()
+    rmb.compute_block_error()
     assert rmb.get_defect_edges()  == TEST_SRC_NODE_LIST  # all source nodes
 
 def test_single_sa1():
     ctr_cell_list = [MemCell() for i in range(7)]
-    ctr_cell_list[3].setErrors(Errors.FF, Errors.SA0)
+    ctr_cell_list[3].set_errors(Errors.FF, Errors.SA0)
     rmb = RoutingMuxBlock(TEST_SRC_NODE_LIST, TEST_SINK_NODE, ctr_cell_list)
-    rmb.computeBlockError()
+    rmb.compute_block_error()
     assert rmb.get_defect_edges()  == [0, 1, 2, 4, 5, 6]  # all source nodes but sa1
 
 def test_single_sa0():
     ctr_cell_list = [MemCell() for i in range(7)]
-    ctr_cell_list[4].setErrors(Errors.FF, Errors.SA1)
+    ctr_cell_list[4].set_errors(Errors.FF, Errors.SA1)
     rmb = RoutingMuxBlock(TEST_SRC_NODE_LIST, TEST_SINK_NODE, ctr_cell_list)
-    rmb.computeBlockError()
+    rmb.compute_block_error()
     assert rmb.get_defect_edges()  == [4]
 
 def test_single_sa0():
     ctr_cell_list = [MemCell() for i in range(7)]
-    ctr_cell_list[5].setErrors(Errors.FF, Errors.SA1)
-    ctr_cell_list[6].setErrors(Errors.FF, Errors.SA1)
+    ctr_cell_list[5].set_errors(Errors.FF, Errors.SA1)
+    ctr_cell_list[6].set_errors(Errors.FF, Errors.SA1)
     rmb = RoutingMuxBlock(TEST_SRC_NODE_LIST, TEST_SINK_NODE, ctr_cell_list)
-    rmb.computeBlockError()
+    rmb.compute_block_error()
     assert rmb.get_defect_edges()  == [5, 6]

@@ -25,49 +25,41 @@ class RoutingMuxBlock():
         """Initialize block as error-free and with all valid inputs."""
         self.src_node_list = src_node_list
         self.sink_node = sink_node
-        self.ctrCellList = cell_list[:len(src_node_list)]
-        self.blockUnusable = False
+        self.ctr_cell_list = cell_list[:len(src_node_list)]
+        self.block_unusable = False
 
-    def setInvalidInputs(self, invalidInputs) -> None:
-        """Set invalid inputs of the block."""
-        self.invalidInputs = invalidInputs
-
-    def setErrors(self, reg: RandomErrorGen) -> None:
+    def set_errors(self, reg: RandomErrorGen) -> None:
         """Set error for every cell in block.
 
-        @ToDo: generalize memcell setErrors to receive reg
+        @ToDo: generalize memcell set_errors to receive reg
         """
-        self.blockUnusable = False
-        if type(self.ctrCellList[0]) == ProtoVoterCell:
-            [c.setErrors(reg.gen(), reg.gen()) for c in self.ctrCellList]
+        self.block_unusable = False
+        if type(self.ctr_cell_list[0]) == ProtoVoterCell:
+            [c.set_errors(reg.gen(), reg.gen()) for c in self.ctr_cell_list]
         else:
-            [c.setErrors(*reg.gen()) for c in self.ctrCellList]
-        self.computeBlockError()
+            [c.set_errors(*reg.gen()) for c in self.ctr_cell_list]
+        self.compute_block_error()
 
-    def computeBlockError(self):
+    def compute_block_error(self):
         """Compute global block error."""
-        memCellErrors = [m.getCellError() for m in self.ctrCellList]
+        memcell_errors = [m.getCellError() for m in self.ctr_cell_list]
         # print(memCellErrors)
 
-        if Errors.UD in memCellErrors:
-            self.blockUnusable = True
+        if Errors.UD in memcell_errors:
+            self.block_unusable = True
             # print("UD in block")
-        elif memCellErrors.count(Errors.SA1) > 1:
-            self.blockUnusable = True
+        elif memcell_errors.count(Errors.SA1) > 1:
+            self.block_unusable = True
             # print("Multiple SA1 in block")
 
-    def getBlockUnusable(self):
-        """Return global usability of block."""
-        return self.blockUnusable
-
     def get_defect_edges(self):
-        if self.blockUnusable:
+        if self.block_unusable:
             defect_edges = self.src_node_list
             return defect_edges
 
-        memCellErrors = [m.getCellError() for m in self.ctrCellList]
-        if Errors.SA1 in memCellErrors:
-            active_source = memCellErrors.index(Errors.SA1)
+        memcell_errors = [m.getCellError() for m in self.ctr_cell_list]
+        if Errors.SA1 in memcell_errors:
+            active_source = memcell_errors.index(Errors.SA1)
             # all but SA1 are defect
             defect_edges = self.src_node_list.copy()
             defect_edges.pop(active_source)
@@ -75,21 +67,21 @@ class RoutingMuxBlock():
 
         defect_edges = [self.src_node_list[i]
                         for i in range(len(self.src_node_list))
-                        if self.ctrCellList[i].getCellError() == Errors.SA0]
+                        if self.ctr_cell_list[i].getCellError() == Errors.SA0]
 
         return defect_edges
 
 
 class SecondStageMuxBlock(RoutingMuxBlock):
     def get_defect_edges(self):
-        if self.blockUnusable:
+        if self.block_unusable:
             # Flatten inputs and return all
             defect_edges = [edge for block_edges in self.src_node_list for edge in block_edges]
             return defect_edges
 
-        memCellErrors = [m.getCellError() for m in self.ctrCellList]
-        if Errors.SA1 in memCellErrors:
-            active_source = memCellErrors.index(Errors.SA1)
+        memcell_errors = [m.getCellError() for m in self.ctr_cell_list]
+        if Errors.SA1 in memcell_errors:
+            active_source = memcell_errors.index(Errors.SA1)
             # all but SA1 are defect
             defect_edges = self.src_node_list.copy()
             defect_edges.pop(active_source)
@@ -99,7 +91,7 @@ class SecondStageMuxBlock(RoutingMuxBlock):
         # Only SA0 present
         defect_edges = []
         for i in range(len(self.src_node_list)):
-            if self.ctrCellList[i].getCellError() == Errors.SA0:
+            if self.ctr_cell_list[i].getCellError() == Errors.SA0:
                 defect_edges += self.src_node_list[i]
 
         return defect_edges
@@ -166,15 +158,15 @@ class RoutingMux():
                                     cell_list=second_stage_cells)
         self.cell_list = first_stage_cells + second_stage_cells
 
-    def setErrors(self, reg):
+    def set_errors(self, reg):
         """Set error for all cells in a block of each stage."""
-        self.first_stage_blocks[0].setErrors(reg)
-        self.second_stage_block.setErrors(reg)
+        self.first_stage_blocks[0].set_errors(reg)
+        self.second_stage_block.set_errors(reg)
 
-    def computeBlockErrors(self):
+    def compute_block_errors(self):
         for block in self.first_stage_blocks:
-            block.computeBlockError()
-        self.second_stage_block.computeBlockError()
+            block.compute_block_error()
+        self.second_stage_block.compute_block_error()
 
     def get_defect_edges(self):
         """Return a dict of defect source nodes indexed by the sink node."""

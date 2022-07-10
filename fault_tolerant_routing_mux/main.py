@@ -41,7 +41,7 @@ def simulate_failure(failure_probabilities, cell_type, iterations):
                 for i in range(iterations):
                     reg = RandomErrorGen(pSA0, pSA1, pUD)
                     rm = RoutingMux(2, [4, 3], cell_type)
-                    rm.setErrors(reg)
+                    rm.set_errors(reg)
                     results[key].append(rm.getMuxUnusable())
 
     # Get % of unusable muxes
@@ -58,7 +58,7 @@ def simulate_failure_equal(failure_probabilities, cell_type, iterations):
         for i in range(iterations):
             reg = RandomErrorGen(pSA0=0, pSA1=0, pUD=p)
             rm = RoutingMux(2, [4, 3], cell_type)
-            rm.setErrors(reg)
+            rm.set_errors(reg)
             results[key].append(rm.getMuxUnusable())
 
     # Get % of unusable muxes

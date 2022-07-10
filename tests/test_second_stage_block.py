@@ -29,39 +29,39 @@ def test_no_failure():
 
 def test_ud_in_block():
     ctr_cell_list = [MemCell() for i in range(7)]
-    ctr_cell_list[0].setErrors(Errors.UD, Errors.UD)
+    ctr_cell_list[0].set_errors(Errors.UD, Errors.UD)
     rmb = SecondStageMuxBlock(TEST_SRC_NODE_LIST, TEST_SINK_NODE, ctr_cell_list)
-    rmb.computeBlockError()
+    rmb.compute_block_error()
     expected_edges = [edge for block_input in TEST_SRC_NODE_LIST for edge in block_input]
     assert rmb.get_defect_edges()  == expected_edges  # all sources flattened
 
 def test_multiple_sa1():
     ctr_cell_list = [MemCell() for i in range(7)]
-    ctr_cell_list[0].setErrors(Errors.FF, Errors.SA0)
-    ctr_cell_list[1].setErrors(Errors.FF, Errors.SA0)
+    ctr_cell_list[0].set_errors(Errors.FF, Errors.SA0)
+    ctr_cell_list[1].set_errors(Errors.FF, Errors.SA0)
     rmb = SecondStageMuxBlock(TEST_SRC_NODE_LIST, TEST_SINK_NODE, ctr_cell_list)
-    rmb.computeBlockError()
+    rmb.compute_block_error()
     expected_edges = [edge for block_input in TEST_SRC_NODE_LIST for edge in block_input]
     assert rmb.get_defect_edges()  == expected_edges  # all sources flattened
 
 def test_single_sa1():
     ctr_cell_list = [MemCell() for i in range(7)]
-    ctr_cell_list[2].setErrors(Errors.FF, Errors.SA0)
+    ctr_cell_list[2].set_errors(Errors.FF, Errors.SA0)
     rmb = SecondStageMuxBlock(TEST_SRC_NODE_LIST, TEST_SINK_NODE, ctr_cell_list)
-    rmb.computeBlockError()
+    rmb.compute_block_error()
     assert rmb.get_defect_edges()  == [0, 1, 2, 3, 4, 5, 9, 10, 11]  # all source nodes but sa1
 
 def test_single_sa0():
     ctr_cell_list = [MemCell() for i in range(7)]
-    ctr_cell_list[3].setErrors(Errors.FF, Errors.SA1)
+    ctr_cell_list[3].set_errors(Errors.FF, Errors.SA1)
     rmb = SecondStageMuxBlock(TEST_SRC_NODE_LIST, TEST_SINK_NODE, ctr_cell_list)
-    rmb.computeBlockError()
+    rmb.compute_block_error()
     assert rmb.get_defect_edges()  == [i for i in range(9, 12)]
 
 def test_single_sa0():
     ctr_cell_list = [MemCell() for i in range(7)]
-    ctr_cell_list[2].setErrors(Errors.FF, Errors.SA1)
-    ctr_cell_list[3].setErrors(Errors.FF, Errors.SA1)
+    ctr_cell_list[2].set_errors(Errors.FF, Errors.SA1)
+    ctr_cell_list[3].set_errors(Errors.FF, Errors.SA1)
     rmb = SecondStageMuxBlock(TEST_SRC_NODE_LIST, TEST_SINK_NODE, ctr_cell_list)
-    rmb.computeBlockError()
+    rmb.compute_block_error()
     assert rmb.get_defect_edges()  == [i for i in range(6, 12)]
