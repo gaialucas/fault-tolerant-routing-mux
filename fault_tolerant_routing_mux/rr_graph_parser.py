@@ -73,19 +73,13 @@ class RRGraphParser():
 
         rr_edges = self.tree.find('rr_edges')
         all_rr_edges = set(rr_edges.findall('edge'))
-        print('finding edges')
         mux_defect_edges = set(edge for edge in all_rr_edges if (edge.attrib['src_node'], edge.attrib['sink_node']) in defect_edges)
-        print('found')
-        print('creating new')
+
         good_edges = all_rr_edges - mux_defect_edges
-        # print(f"Good edges len: {len(good_edges)}")
         new_rr_edges = ET.Element('rr_edges')
         new_rr_edges.extend(good_edges)
-        print('deleting')
+
         self.tree.getroot().remove(rr_edges)
-        print('readding')
         self.tree.getroot().append(new_rr_edges)
 
-        # print(f"Writing new file")
         self.tree.write(defect_filename)
-        # print(f"Saved {defect_filename}")

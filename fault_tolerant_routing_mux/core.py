@@ -173,6 +173,8 @@ class FaultSimulator():
             f.write(f"# SA0:\t\t\t\t{err_sa0:6d}\n")
             f.write(f"# SA1:\t\t\t\t{err_sa1:6d}\n")
             f.write(f"# UD:\t\t\t\t{err_ud:6d}\n")
+            f.write(f"Total edges:\t\t\t{self.initial_edge_count:6d}\n")
+            f.write(f"Defect edges:\t\t\t{self.defect_edge_count:6d}\n")
             f.write(f"% Defect edges:\t\t{defect:6.2f}\n")
             f.write(f"% Unusable muxes:\t\t{unusable:6.2f}\n")
 
