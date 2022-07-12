@@ -40,7 +40,7 @@ class RandomErrorGen():
     reg = RandomErrorGen(pSA0=0, pSA1=0, pUD=0)
     """
 
-    def __init__(self, pSA0: float = 0., pSA1: float = 0., pUD: float = 0.) -> None:
+    def __init__(self, pSA0: float = 0., pSA1: float = 0., pUD: float = 0.):
         """Init the error distribution."""
         self.pUD = pUD
         self.pSA0 = pUD + pSA0

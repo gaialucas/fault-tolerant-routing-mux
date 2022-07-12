@@ -182,6 +182,6 @@ class RoutingMux():
     def get_cell_errors(self):
         return [cell.getCellError() for cell in self.cell_list]
 
-    def getMuxUnusable(self):
+    def get_mux_unusable(self):
         """Return if mux is usable for routing or not."""
-        return self.muxUnusable
+        return self.first_stage_blocks[0].block_unusable or self.second_stage_block.block_unusable

@@ -28,7 +28,7 @@ def test_base_arch_sa0():
     test_cell.set_errors(Errors.FF, Errors.SA1)
     assert test_cell.getCellError() == Errors.SA0
 
-    # Pull-Up SA0, Pull-Up ok or SA1
+    # Pull-Up SA0, Pull-Down ok or SA1
     test_cell.set_errors(Errors.SA0, Errors.FF)
     assert test_cell.getCellError() == Errors.SA0
     test_cell.set_errors(Errors.SA0, Errors.SA1)

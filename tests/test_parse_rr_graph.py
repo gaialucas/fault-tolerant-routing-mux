@@ -14,6 +14,7 @@
 # =============================================================================
 """Test suite for the routing resource graph parser."""
 from xml.etree.ElementTree import ParseError
+from numpy import source
 import pytest
 import os
 from fault_tolerant_routing_mux.rr_graph_parser import RRGraphParser
@@ -33,6 +34,7 @@ def test_minimal_file():
     rrgp = RRGraphParser(os.path.join(BASE_DIR, "minimal.xml"))
     expected_mux_dict = {10: [24678, 24680, 24681, 24682, 24684]}
     mux_dict = rrgp.get_mux_dict()
+    assert len(mux_dict) == len(expected_mux_dict)
     for k in mux_dict:
         assert mux_dict[k] == expected_mux_dict[k]
     # assert mux_dict.values() == expected_mux_dict.values()
@@ -44,6 +46,7 @@ def test_sample_file():
         13: [24673, 24681, 24689, 24696, 24697, 24698, 24700, 24702, 24704]
     }
     mux_dict = rrgp.get_mux_dict()
+    assert len(mux_dict) == len(expected_mux_dict)
     for k in mux_dict:
         assert mux_dict[k] == expected_mux_dict[k]
 
@@ -56,6 +59,7 @@ def test_update_rr_graph():
         13: [24673, 24681, 24696, 24697, 24700, 24702, 24704]
     }
     mux_dict = defect_rrgp.get_mux_dict()
+    assert len(mux_dict) == len(expected_mux_dict)
     for k in mux_dict:
-        assert mux_dict[k] == expected_mux_dict[k]
+        assert sorted(mux_dict[k]) == expected_mux_dict[k]
     os.remove(os.path.join(BASE_DIR, 'defect_simple.xml'))

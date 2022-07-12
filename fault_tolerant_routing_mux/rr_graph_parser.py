@@ -66,19 +66,26 @@ class RRGraphParser():
         return self.mux_dict
 
     def update_rr_graph(self, defect_filename, defect_edges_dict):
-        defect_edges = []
-        for sink, sources in defect_edges_dict.items():
-            for source in sources:
-                defect_edges.append((source, sink))
+        # Since src-sink are unique we can use a set for efficiency
+        defect_edges = {(str(source), str(sink))
+                        for sink, sources in defect_edges_dict.items()
+                        for source in sources}
 
-        # Use findall to avoid removal during traversal
-        all_rr_edges = self.tree.find('rr_edges')
-        for edge in all_rr_edges.findall('edge'):
-            print(edge.attrib)
-            if edge.attrib['switch_id'] == self.switchbox_id:
-                sink_node = int(edge.attrib['sink_node'])
-                src_node = int(edge.attrib['src_node'])
-                if (src_node, sink_node) in defect_edges:
-                    all_rr_edges.remove(edge)
+        rr_edges = self.tree.find('rr_edges')
+        all_rr_edges = set(rr_edges.findall('edge'))
+        print('finding edges')
+        mux_defect_edges = set(edge for edge in all_rr_edges if (edge.attrib['src_node'], edge.attrib['sink_node']) in defect_edges)
+        print('found')
+        print('creating new')
+        good_edges = all_rr_edges - mux_defect_edges
+        # print(f"Good edges len: {len(good_edges)}")
+        new_rr_edges = ET.Element('rr_edges')
+        new_rr_edges.extend(good_edges)
+        print('deleting')
+        self.tree.getroot().remove(rr_edges)
+        print('readding')
+        self.tree.getroot().append(new_rr_edges)
 
+        # print(f"Writing new file")
         self.tree.write(defect_filename)
+        # print(f"Saved {defect_filename}")
