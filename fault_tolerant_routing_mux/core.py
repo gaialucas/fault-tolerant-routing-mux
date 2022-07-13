@@ -128,7 +128,7 @@ class FaultSimulator():
             f.write("Standalone simulation report\n")
             f.write(f"Number of iterations:\t{num_iters}\n")
             f.write(f"Cell type:\t\t\t\t{cell_type.__name__}\n")
-            f.write(f"Simulation time:\t\t{sim_time:5.2f} seconds\n")
+            f.write(f"Simulation time:\t\t{sim_time:.2f} seconds\n")
             f.write("=" * 80)
             f.write("\n\n")
 
@@ -138,7 +138,10 @@ class FaultSimulator():
             f.write("% defect edges\t")
             f.write("# SA0\t")
             f.write("# SA1\t")
-            f.write("# UD\n")
+            f.write("# UD\t")
+            f.write("% SA0\t")
+            f.write("% SA1\t")
+            f.write("% UD\n")
 
             # Table
             for k, v in results.items():
@@ -146,7 +149,11 @@ class FaultSimulator():
                 unusable = f"\t\t\t\t{v[0] * 100:6.2f}"
                 defect = f"\t{v[1] * 100:6.2f}"
                 errors = f"\t{v[2]:4d}\t{v[3]:4d}\t{v[4]:4d}"
-                table_entry = f"{key}\t{unusable}\t{defect}\t{errors}\n"
+                percentsa0 = f"{v[2] / (num_iters*7) * 100:5.2f}"
+                percentsa1 = f"{v[3] / (num_iters*7) * 100:5.2f}"
+                percentud = f"{v[4] / (num_iters*7) * 100:5.2f}"
+                percents = f"{percentsa0}\t{percentsa1}\t{percentud}"
+                table_entry = f"{key}\t{unusable}\t{defect}\t{errors}\t{percents}\n"
                 f.write(table_entry)
 
         print("Report written to fault_sim.rpt")
@@ -157,24 +164,28 @@ class FaultSimulator():
             # Header
             f.write("Fault simulation report\n")
             f.write(f"RR Graph File:\t{self.rr_graph_file}\n")
-            f.write(f"Cell type:\t\t\t{self.cell_type.__name__}\n")
-            f.write(f"Simulation time:\t\t{self.sim_time:7.2f} seconds\n")
-            f.write(f"Report time:\t\t\t{self.report_time:7.2f} seconds\n")
+            f.write(f"Cell type:\t\t{self.cell_type.__name__}\n")
+            f.write(f"Simulation time:\t{self.sim_time:.2f} seconds\n")
+            f.write(f"Report time:\t\t{self.report_time:.2f} seconds\n")
             f.write("=" * 80)
             f.write("\n\n")
 
             # Table
             unusable = self.unusable_count / len(self.muxes) * 100
             defect = self.defect_edge_count / self.initial_edge_count * 100
-            err_sa0 = self.cell_errors_counter[Errors.SA0]
-            err_sa1 = self.cell_errors_counter[Errors.SA1]
-            err_ud  = self.cell_errors_counter[Errors.UD]  # noqa E221
+            print(f"FF: {self.cell_errors_counter[Errors.FF]}")
+            err_sa0 = self.cell_errors_counter[Errors.SA0] / sum(self.cell_errors_counter.values()) * 100
+            err_sa1 = self.cell_errors_counter[Errors.SA1] / sum(self.cell_errors_counter.values()) * 100
+            err_ud  = self.cell_errors_counter[Errors.UD]  / sum(self.cell_errors_counter.values()) * 100# noqa E221
 
-            f.write(f"# SA0:\t\t\t\t{err_sa0:6d}\n")
-            f.write(f"# SA1:\t\t\t\t{err_sa1:6d}\n")
-            f.write(f"# UD:\t\t\t\t{err_ud:6d}\n")
+            f.write(f"# SA0:\t\t\t\t{self.cell_errors_counter[Errors.SA0]:6d}\n")
+            f.write(f"# SA1:\t\t\t\t{self.cell_errors_counter[Errors.SA1]:6d}\n")
+            f.write(f"# UD:\t\t\t\t{self.cell_errors_counter[Errors.UD]:6d}\n")
             f.write(f"Total edges:\t\t\t{self.initial_edge_count:6d}\n")
             f.write(f"Defect edges:\t\t\t{self.defect_edge_count:6d}\n")
+            f.write(f"% SA0:\t\t\t\t{err_sa0:6.2f}\n")
+            f.write(f"% SA1:\t\t\t\t{err_sa1:6.2f}\n")
+            f.write(f"% UD:\t\t\t\t{err_ud:6.2f}\n")
             f.write(f"% Defect edges:\t\t{defect:6.2f}\n")
             f.write(f"% Unusable muxes:\t\t{unusable:6.2f}\n")
 
