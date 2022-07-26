@@ -53,3 +53,7 @@ class RandomErrorGen():
             cum_weights=[self.pUD, self.pSA0, self.pSA1, 1],
             k=2
         )
+
+    def get_probabilities(self):
+        # Convert cumulative back to absolute before returning
+        return self.pSA0 - self.pUD, self.pSA1 - self.pSA0, self.pUD

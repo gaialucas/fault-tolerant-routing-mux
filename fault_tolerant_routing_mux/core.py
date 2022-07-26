@@ -15,6 +15,7 @@
 """Provides core simulation class to load and overwrite routing resource files."""
 from collections import Counter
 from datetime import datetime
+from pathlib import Path
 from typing import Dict
 import numpy as np
 
@@ -35,26 +36,29 @@ class FaultSimulator():
     Utilities to plot the given results are provided in plot_fault_results.
     >>> ftrm.plot_fault_results(res)
 
-    To use it with VTR, instantiate the class with a memory cell class, rr_graph file and fault probabilities.
+    To use it with VTR, instantiate the class with a memory cell class, rr_graph file and error
+    probabilities. Use keyword argument p to set equal probability to all errors or set each of
+    them using pSA0, pSA1 and pUD keyword arguments.
     >>> fault_sim = FaultSimulator(ProtoVoterCell, rr_graph_file=file_pathname, p=0.003)
     >>> fault_sim.run_simulation()
     """
 
-    def __init__(self, cell_type, rr_graph_file: str, p: float=None, pSA0: float=0., pSA1: float=0., pUD: float=0.):  # noqa: E501, E252
+    def __init__(self, cell_type, rr_graph_file: Path, p: float=None, pSA0: float=0., pSA1: float=0., pUD: float=0.):  # noqa: E501, E252
         """Wrap RRGraphParser and RandomErrorGen."""
         self.rrg = RRGraphParser(rr_graph_file)
-        self.initial_edge_count = self.get_edge_count(self.rrg.get_mux_dict())
+        self.total_edge_count = self.get_total_edge_count()
+        self.mux_edge_count = self.get_mux_edge_count(self.rrg.get_mux_dict())
         self.muxes = self.gen_routing_muxes(self.rrg.get_mux_dict(), cell_type)
         self.defect_edges = dict()
         # [:-4] gets name up to extension (.xml)
-        self.rr_graph_file = rr_graph_file[:-4]
+        self.rr_graph_file = str(rr_graph_file)[:-4]
         self.cell_type = cell_type
         if p is not None:  # Assume all equal probabilites
             self.reg = RandomErrorGen(pSA0=p, pSA1=p, pUD=p)
             self.faulty_rr_graph_file = f"{self.rr_graph_file}_{p*100:02.1f}.xml"
         else:
             self.reg = RandomErrorGen(pSA0=pSA0, pSA1=pSA1, pUD=pUD)
-            self.faulty_rr_graph_file = f"{self.rr_graph_file}_{pSA0*100:05.2f}_{pSA1*100:05.2f}_{pSA1*100:05.2f}.xml"  # noqa E501
+            self.faulty_rr_graph_file = f"{self.rr_graph_file}_{pSA0*100:05.2f}_{pSA1*100:05.2f}_{pUD*100:05.2f}.xml"  # noqa E501
 
     def run_simulation(self):
         # Setup
@@ -78,7 +82,7 @@ class FaultSimulator():
         self.unusable_count = sum(unusable_muxes)
         self.defect_edges = defect_edges
         self.cell_errors_counter = Counter(cell_errors)
-        self.defect_edge_count = self.get_edge_count(self.defect_edges)
+        self.defect_edge_count = self.get_mux_edge_count(self.defect_edges)
         print(".", end="")
 
         self._write_defect_rr_graph_file()
@@ -160,43 +164,54 @@ class FaultSimulator():
 
     def _write_report(self):
         report_file = f'{self.faulty_rr_graph_file[:-4]}.rpt'
+        pSA0, pSA1, pUD = self.reg.get_probabilities()
         with open(report_file, 'w') as f:
             # Header
             f.write("Fault simulation report\n")
             f.write(f"RR Graph File:\t{self.rr_graph_file}\n")
             f.write(f"Cell type:\t\t{self.cell_type.__name__}\n")
-            f.write(f"Simulation time:\t{self.sim_time:.2f} seconds\n")
+            f.write(f"Simu time:\t\t{self.sim_time:.2f} seconds\n")
             f.write(f"Report time:\t\t{self.report_time:.2f} seconds\n")
+            f.write(f"P(SA0):\t{pSA0 * 100:5.2f} | ")
+            f.write(f"P(SA1):\t{pSA1 * 100:5.2f} | ")
+            f.write(f"P(UD):\t{pUD * 100:5.2f}\n")
             f.write("=" * 80)
             f.write("\n\n")
 
             # Table
             unusable = self.unusable_count / len(self.muxes) * 100
-            defect = self.defect_edge_count / self.initial_edge_count * 100
-            print(f"FF: {self.cell_errors_counter[Errors.FF]}")
-            err_sa0 = self.cell_errors_counter[Errors.SA0] / sum(self.cell_errors_counter.values()) * 100
-            err_sa1 = self.cell_errors_counter[Errors.SA1] / sum(self.cell_errors_counter.values()) * 100
-            err_ud  = self.cell_errors_counter[Errors.UD]  / sum(self.cell_errors_counter.values()) * 100# noqa E221
+            defect = self.defect_edge_count / self.mux_edge_count * 100
+            # print(f"FF: {self.cell_errors_counter[Errors.FF]}")
+            err_sa0 = self.cell_errors_counter[Errors.SA0] / sum(self.cell_errors_counter.values()) * 100 # noqa E221
+            err_sa1 = self.cell_errors_counter[Errors.SA1] / sum(self.cell_errors_counter.values()) * 100 # noqa E221
+            err_ud  = self.cell_errors_counter[Errors.UD]  / sum(self.cell_errors_counter.values()) * 100 # noqa E221
 
             f.write(f"# SA0:\t\t\t\t{self.cell_errors_counter[Errors.SA0]:6d}\n")
             f.write(f"# SA1:\t\t\t\t{self.cell_errors_counter[Errors.SA1]:6d}\n")
             f.write(f"# UD:\t\t\t\t{self.cell_errors_counter[Errors.UD]:6d}\n")
-            f.write(f"Total edges:\t\t\t{self.initial_edge_count:6d}\n")
-            f.write(f"Defect edges:\t\t\t{self.defect_edge_count:6d}\n")
+            f.write(f"Total edges:\t\t{self.total_edge_count:6d}\n")
+            f.write(f"Mux edges:\t\t\t{self.mux_edge_count:6d}\n")
+            f.write(f"Defect edges:\t\t{self.defect_edge_count:6d}\n")
             f.write(f"% SA0:\t\t\t\t{err_sa0:6.2f}\n")
             f.write(f"% SA1:\t\t\t\t{err_sa1:6.2f}\n")
             f.write(f"% UD:\t\t\t\t{err_ud:6.2f}\n")
             f.write(f"% Defect edges:\t\t{defect:6.2f}\n")
-            f.write(f"% Unusable muxes:\t\t{unusable:6.2f}\n")
+            f.write(f"% Unusable muxes:\t{unusable:6.2f}\n")
 
         print(f"Report written to {report_file}")
 
     def _write_defect_rr_graph_file(self):
         self.rrg.update_rr_graph(self.faulty_rr_graph_file, self.defect_edges)
 
-    def get_edge_count(self, mux_dict: Dict):
+    def get_mux_edge_count(self, mux_dict: Dict):
         """Return number of edges from a dictionary of {sink: [source nodes]}."""
         return sum([len(edges) for edges in mux_dict.values()])
+
+    def get_total_edge_count(self):
+        return self.rrg.get_total_num_edges()
+
+    def get_faulty_rr_graph(self):
+        return self.faulty_rr_graph_file
 
     def gen_routing_muxes(self, mux_dict: Dict, cell_type):
         """Create list of RoutingMuxes from RRGraphParser output."""

@@ -16,4 +16,4 @@
 
 from fault_tolerant_routing_mux.core import FaultSimulator
 from fault_tolerant_routing_mux.control_cell import MemCell, ProtoVoterCell
-from fault_tolerant_routing_mux import plotter
+# from fault_tolerant_routing_mux import plotter
