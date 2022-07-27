@@ -52,6 +52,7 @@ class FaultSimulator():
         self.defect_edges = dict()
         # [:-4] gets name up to extension (.xml)
         self.rr_graph_file = str(rr_graph_file)[:-4]
+        self.out_file = rr_graph_file.parents[0] / "fault_sim.out"
         self.cell_type = cell_type
         if p is not None:  # Assume all equal probabilites
             self.reg = RandomErrorGen(pSA0=p, pSA1=p, pUD=p)
@@ -163,15 +164,14 @@ class FaultSimulator():
         print("Report written to fault_sim.rpt")
 
     def _write_report(self):
-        report_file = f'{self.faulty_rr_graph_file[:-4]}.rpt'
         pSA0, pSA1, pUD = self.reg.get_probabilities()
-        with open(report_file, 'w') as f:
+        with open(self.out_file, 'w') as f:
             # Header
             f.write("Fault simulation report\n")
             f.write(f"RR Graph File:\t{self.rr_graph_file}\n")
             f.write(f"Cell type:\t\t{self.cell_type.__name__}\n")
             f.write(f"Simu time:\t\t{self.sim_time:.2f} seconds\n")
-            f.write(f"Report time:\t\t{self.report_time:.2f} seconds\n")
+            f.write(f"Report time:\t{self.report_time:.2f} seconds\n")
             f.write(f"P(SA0):\t{pSA0 * 100:5.2f} | ")
             f.write(f"P(SA1):\t{pSA1 * 100:5.2f} | ")
             f.write(f"P(UD):\t{pUD * 100:5.2f}\n")
@@ -198,7 +198,7 @@ class FaultSimulator():
             f.write(f"% Defect edges:\t\t{defect:6.2f}\n")
             f.write(f"% Unusable muxes:\t{unusable:6.2f}\n")
 
-        print(f"Report written to {report_file}")
+        print(f"Report written to {self.out_file}")
 
     def _write_defect_rr_graph_file(self):
         self.rrg.update_rr_graph(self.faulty_rr_graph_file, self.defect_edges)
