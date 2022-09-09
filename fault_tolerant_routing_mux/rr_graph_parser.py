@@ -39,6 +39,8 @@ class RRGraphParser():
         """
         self.tree = ET.parse(rr_graph_file)
         self.mux_dict = defaultdict(list)
+        self.switchbox_id = None
+        self.cblock_id = None
         self.parse_switches()
         self.parse_rr_edges()
 
@@ -55,8 +57,10 @@ class RRGraphParser():
 
         An edge is only parsed if mux id matches self.target_id.
         """
+        mux_ids = {self.cblock_id, self.switchbox_id}
+
         for edge in self.tree.find('rr_edges'):
-            if edge.attrib['switch_id'] == self.switchbox_id:
+            if edge.attrib['switch_id'] in mux_ids:
                 sink_node = edge.attrib['sink_node']
                 src_node = edge.attrib['src_node']
                 self.mux_dict[int(sink_node)].append(int(src_node))
