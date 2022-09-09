@@ -26,6 +26,11 @@ from .memristor_errors import Errors
 class MemCell():
     """Standard representation of a single 2T2R memory cell."""
 
+    error_LUT = ((Errors.FF,  Errors.SA0, Errors.SA1, Errors.UD),
+                 (Errors.SA1, Errors.UD,  Errors.SA1, Errors.UD),
+                 (Errors.SA0, Errors.SA0, Errors.UD,  Errors.UD),
+                 (Errors.UD,  Errors.UD,  Errors.UD,  Errors.UD))
+
     def __init__(self) -> None:
         """Initialize cell as error-free."""
         self.pullUpMemristor = Errors.FF
@@ -33,21 +38,8 @@ class MemCell():
         self.cellError = Errors.FF
 
     def compute_cell_error(self) -> None:
-        """Compute global cel error from each memristor error."""
-        if (self.pullUpMemristor == Errors.UD) or (self.pullDownMemristor == Errors.UD):
-            self.cellError = Errors.UD
-        elif (self.pullDownMemristor == Errors.SA0):
-            if (self.pullUpMemristor == Errors.SA0):
-                self.cellError = Errors.UD
-            else:
-                self.cellError = Errors.SA1
-        elif (self.pullDownMemristor == Errors.SA1):
-            if (self.pullUpMemristor == Errors.SA1):
-                self.cellError = Errors.UD
-            else:
-                self.cellError = Errors.SA0
-        else:  # Pull-Down is FF, cell error is the same as Pull-Up
-            self.cellError = self.pullUpMemristor
+        """Get routing switch gate error from the error LUT."""
+        self.cellError = MemCell.error_LUT[self.pullDownMemristor][self.pullUpMemristor]
 
     def set_errors(self, pullUpError, pullDownError) -> None:
         """Set error for memristors in cell and compute global cell error."""
@@ -66,6 +58,10 @@ class ProtoVoterCell():
     The cell consists of a single memory cell selecting between another
     memory cell or ground, in case of failure of the former.
     """
+    error_LUT = ((Errors.FF,  Errors.SA0, Errors.FF,  Errors.SA0),
+                 (Errors.SA0, Errors.SA0, Errors.SA0, Errors.SA0),
+                 (Errors.FF,  Errors.SA0, Errors.SA1, Errors.UD),
+                 (Errors.SA0, Errors.SA0, Errors.UD,  Errors.UD))
 
     def __init__(self) -> None:
         """Initialize control cell as error-free."""
@@ -80,21 +76,10 @@ class ProtoVoterCell():
         self.compute_cell_error()
 
     def compute_cell_error(self):
-        """Compute global control cell error."""
+        """Get routing switch gate error from the error LUT."""
         mainCellError = self.mainCell.getCellError()
         ctrCellError = self.ctrCell.getCellError()
-        if (ctrCellError == Errors.UD):
-            if (mainCellError == Errors.SA1 or mainCellError == Errors.UD):
-                self.cellError = Errors.UD
-            else:
-                self.cellError = Errors.SA0
-        elif (ctrCellError == Errors.SA1):
-            self.cellError = mainCellError
-        elif (ctrCellError == Errors.SA0):
-            self.cellError = Errors.SA0
-        # crlCellError == FF
-        elif (mainCellError == Errors.SA0) or (mainCellError == Errors.UD):
-            self.cellError = Errors.SA0
+        self.cellError = ProtoVoterCell.error_LUT[mainCellError][ctrCellError]
 
     def getCellError(self):
         """Return cell error."""
