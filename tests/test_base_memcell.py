@@ -19,57 +19,57 @@ from fault_tolerant_routing_mux.control_cell import MemCell
 
 def test_base_arch_init():
     test_cell = MemCell()
-    assert test_cell.getCellError() == Errors.FF
+    assert test_cell.get_cell_error() == Errors.FF
 
 def test_base_arch_sa0():
     test_cell = MemCell()
 
     # Pull-Down SA1, Pull-Up ok
     test_cell.set_errors(Errors.FF, Errors.SA1)
-    assert test_cell.getCellError() == Errors.SA0
+    assert test_cell.get_cell_error() == Errors.SA0
 
     # Pull-Up SA0, Pull-Down ok or SA1
     test_cell.set_errors(Errors.SA0, Errors.FF)
-    assert test_cell.getCellError() == Errors.SA0
+    assert test_cell.get_cell_error() == Errors.SA0
     test_cell.set_errors(Errors.SA0, Errors.SA1)
-    assert test_cell.getCellError() == Errors.SA0
+    assert test_cell.get_cell_error() == Errors.SA0
 
 def test_base_arch_sa1():
     test_cell = MemCell()
 
     # Pull-Down SA0, Pull-Up ok
     test_cell.set_errors(Errors.FF, Errors.SA0)
-    assert test_cell.getCellError() == Errors.SA1
+    assert test_cell.get_cell_error() == Errors.SA1
 
     # Pull-Up SA1, Pull-Up ok or SA0
     test_cell.set_errors(Errors.SA1, Errors.FF)
-    assert test_cell.getCellError() == Errors.SA1
+    assert test_cell.get_cell_error() == Errors.SA1
     test_cell.set_errors(Errors.SA1, Errors.SA0)
-    assert test_cell.getCellError() == Errors.SA1
+    assert test_cell.get_cell_error() == Errors.SA1
 
 def test_base_arch_ud():
     test_cell = MemCell()
 
     # Pull-Down UD, Pull-Up any
     test_cell.set_errors(Errors.FF, Errors.UD)
-    assert test_cell.getCellError() == Errors.UD
+    assert test_cell.get_cell_error() == Errors.UD
     test_cell.set_errors(Errors.SA0, Errors.UD)
-    assert test_cell.getCellError() == Errors.UD
+    assert test_cell.get_cell_error() == Errors.UD
     test_cell.set_errors(Errors.SA1, Errors.UD)
-    assert test_cell.getCellError() == Errors.UD
+    assert test_cell.get_cell_error() == Errors.UD
 
     # Pull-Up UD, Pull-down any
     test_cell.set_errors(Errors.UD, Errors.FF)
-    assert test_cell.getCellError() == Errors.UD
+    assert test_cell.get_cell_error() == Errors.UD
     test_cell.set_errors(Errors.UD, Errors.SA0)
-    assert test_cell.getCellError() == Errors.UD
+    assert test_cell.get_cell_error() == Errors.UD
     test_cell.set_errors(Errors.UD, Errors.SA1)
-    assert test_cell.getCellError() == Errors.UD
+    assert test_cell.get_cell_error() == Errors.UD
 
     # Same error Pull-Down and Pull-Up
     test_cell.set_errors(Errors.SA1, Errors.SA1)
-    assert test_cell.getCellError() == Errors.UD
+    assert test_cell.get_cell_error() == Errors.UD
     test_cell.set_errors(Errors.SA0, Errors.SA0)
-    assert test_cell.getCellError() == Errors.UD
+    assert test_cell.get_cell_error() == Errors.UD
     test_cell.set_errors(Errors.UD, Errors.UD)
-    assert test_cell.getCellError() == Errors.UD
+    assert test_cell.get_cell_error() == Errors.UD

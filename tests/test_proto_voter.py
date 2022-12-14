@@ -19,7 +19,7 @@ from fault_tolerant_routing_mux.control_cell import ProtoVoterCell
 
 def test_base_arch_init():
     test_cell = ProtoVoterCell()
-    assert test_cell.getCellError() == Errors.FF
+    assert test_cell.get_cell_error() == Errors.FF
 
 
 def test_base_arch_ff():
@@ -30,18 +30,18 @@ def test_base_arch_ff():
 
     # mc FF, cc FF
     test_cell.set_errors(mce, cce)
-    assert test_cell.getCellError() == Errors.FF
+    assert test_cell.get_cell_error() == Errors.FF
 
     # mc FF, cc SA1
     cce = [Errors.SA1, Errors.FF]
     test_cell.set_errors(mce, cce)
-    assert test_cell.getCellError() == Errors.FF
+    assert test_cell.get_cell_error() == Errors.FF
 
     # mc SA1, cc FF
     mce = [Errors.SA1, Errors.FF]
     cce = [Errors.FF, Errors.FF]
     test_cell.set_errors(mce, cce)
-    assert test_cell.getCellError() == Errors.FF
+    assert test_cell.get_cell_error() == Errors.FF
 
 def test_base_arch_sa0():
     test_cell = ProtoVoterCell()
@@ -50,47 +50,47 @@ def test_base_arch_sa0():
     mce = [Errors.FF, Errors.FF]
     cce = [Errors.SA0, Errors.FF]
     test_cell.set_errors(mce, cce)
-    assert test_cell.getCellError() == Errors.SA0
+    assert test_cell.get_cell_error() == Errors.SA0
 
     # mc FF, cc UD
     cce = [Errors.UD, Errors.FF]
     test_cell.set_errors(mce, cce)
-    assert test_cell.getCellError() == Errors.SA0
+    assert test_cell.get_cell_error() == Errors.SA0
 
     # mc SA0, cc UD
     mce = [Errors.SA0, Errors.FF]
     test_cell.set_errors(mce, cce)
-    assert test_cell.getCellError() == Errors.SA0
+    assert test_cell.get_cell_error() == Errors.SA0
 
     # mc SA0, cc SA1
     cce = [Errors.SA1, Errors.FF]
     test_cell.set_errors(mce, cce)
-    assert test_cell.getCellError() == Errors.SA0
+    assert test_cell.get_cell_error() == Errors.SA0
 
     # mc SA0, cc FF
     cce = [Errors.FF, Errors.FF]
     test_cell.set_errors(mce, cce)
-    assert test_cell.getCellError() == Errors.SA0
+    assert test_cell.get_cell_error() == Errors.SA0
 
     # mc SA0, cc SA0
     cce = [Errors.SA0, Errors.FF]
     test_cell.set_errors(mce, cce)
-    assert test_cell.getCellError() == Errors.SA0
+    assert test_cell.get_cell_error() == Errors.SA0
 
     # mc SA1, cc SA0
     mce = [Errors.SA1, Errors.FF]
     test_cell.set_errors(mce, cce)
-    assert test_cell.getCellError() == Errors.SA0
+    assert test_cell.get_cell_error() == Errors.SA0
 
     # mc UD, cc SA0
     mce = [Errors.UD, Errors.FF]
     test_cell.set_errors(mce, cce)
-    assert test_cell.getCellError() == Errors.SA0
+    assert test_cell.get_cell_error() == Errors.SA0
 
     # mc UD, cc FF
     cce = [Errors.FF, Errors.FF]
     test_cell.set_errors(mce, cce)
-    assert test_cell.getCellError() == Errors.SA0
+    assert test_cell.get_cell_error() == Errors.SA0
 
 
 def test_base_arch_sa1():
@@ -100,7 +100,7 @@ def test_base_arch_sa1():
     mce = [Errors.SA1, Errors.FF]
     cce = [Errors.SA1, Errors.FF]
     test_cell.set_errors(mce, cce)
-    assert test_cell.getCellError() == Errors.SA1
+    assert test_cell.get_cell_error() == Errors.SA1
 
 def test_base_arch_ud():
     test_cell = ProtoVoterCell()
@@ -109,14 +109,14 @@ def test_base_arch_ud():
     mce = [Errors.SA1, Errors.FF]
     cce = [Errors.UD, Errors.FF]
     test_cell.set_errors(mce, cce)
-    assert test_cell.getCellError() == Errors.UD
+    assert test_cell.get_cell_error() == Errors.UD
 
     # mc UD, cc UD
     mce = [Errors.UD, Errors.FF]
     test_cell.set_errors(mce, cce)
-    assert test_cell.getCellError() == Errors.UD
+    assert test_cell.get_cell_error() == Errors.UD
 
     # mc UD, cc SA1
     cce = [Errors.SA1, Errors.FF]
     test_cell.set_errors(mce, cce)
-    assert test_cell.getCellError() == Errors.UD
+    assert test_cell.get_cell_error() == Errors.UD

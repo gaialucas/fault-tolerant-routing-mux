@@ -42,7 +42,7 @@ class RoutingMuxBlock():
 
     def compute_block_error(self):
         """Compute global block error."""
-        memcell_errors = [m.getCellError() for m in self.ctr_cell_list]
+        memcell_errors = [m.get_cell_error() for m in self.ctr_cell_list]
         # print(memCellErrors)
 
         if Errors.UD in memcell_errors:
@@ -57,7 +57,7 @@ class RoutingMuxBlock():
             defect_edges = self.src_node_list
             return defect_edges
 
-        memcell_errors = [m.getCellError() for m in self.ctr_cell_list]
+        memcell_errors = [m.get_cell_error() for m in self.ctr_cell_list]
         if Errors.SA1 in memcell_errors:
             active_source = memcell_errors.index(Errors.SA1)
             # all but SA1 are defect
@@ -67,7 +67,7 @@ class RoutingMuxBlock():
 
         defect_edges = [self.src_node_list[i]
                         for i in range(len(self.src_node_list))
-                        if self.ctr_cell_list[i].getCellError() == Errors.SA0]
+                        if self.ctr_cell_list[i].get_cell_error() == Errors.SA0]
 
         return defect_edges
 
@@ -79,7 +79,7 @@ class SecondStageMuxBlock(RoutingMuxBlock):
             defect_edges = [edge for block_edges in self.src_node_list for edge in block_edges]
             return defect_edges
 
-        memcell_errors = [m.getCellError() for m in self.ctr_cell_list]
+        memcell_errors = [m.get_cell_error() for m in self.ctr_cell_list]
         if Errors.SA1 in memcell_errors:
             active_source = memcell_errors.index(Errors.SA1)
             # all but SA1 are defect
@@ -91,7 +91,7 @@ class SecondStageMuxBlock(RoutingMuxBlock):
         # Only SA0 present
         defect_edges = []
         for i in range(len(self.src_node_list)):
-            if self.ctr_cell_list[i].getCellError() == Errors.SA0:
+            if self.ctr_cell_list[i].get_cell_error() == Errors.SA0:
                 defect_edges += self.src_node_list[i]
 
         return defect_edges
@@ -180,7 +180,7 @@ class RoutingMux():
         return {self.sink_node: set(defect_edges)}
 
     def get_cell_errors(self):
-        return [cell.getCellError() for cell in self.cell_list]
+        return [cell.get_cell_error() for cell in self.cell_list]
 
     def get_mux_unusable(self):
         """Return if mux is usable for routing or not."""
