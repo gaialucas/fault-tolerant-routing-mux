@@ -87,6 +87,7 @@ class RRGraphParser():
         self.tree.getroot().append(new_rr_edges)
 
         self.tree.write(defect_filename)
+        del(self.tree)
 
     def get_total_num_edges(self):
         return len(self.tree.find('rr_edges'))

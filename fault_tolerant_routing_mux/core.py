@@ -216,3 +216,6 @@ class FaultSimulator():
     def gen_routing_muxes(self, mux_dict: Dict, cell_type):
         """Create list of RoutingMuxes from RRGraphParser output."""
         return [RoutingMux(sink, sources, cell_type) for sink, sources in mux_dict.items()]
+
+    def set_new_rr_filename(self, new_faulty_rr_filename: str):
+        self.faulty_rr_graph_file = new_faulty_rr_filename
