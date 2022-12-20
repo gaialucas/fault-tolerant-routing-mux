@@ -11,7 +11,7 @@ This work is based on my master thesis at [TU Darmstadt Institute of Computer Sy
 
 Fault-Tolerant-Routing-Mux (FTRM) simulates two-stage routing multiplexers used in modern FPGA devices, but considers the memory cells controlling the routing switches as memristor-based. It provides 2 types of memristor-based memory cells to be considered: the 2T2R cell and the Proto-Voter cell. By providing a cell type and defect probabilities this module simulates individual memristor defects following the given distributions and its effect on the routing multiplexer.
 
-This module works best in tandem with [Verilog-toRouting](https://verilogtorouting.org/) and has two operation modes: Standalone simulation or VTR-integrated simulation. An already customized VTR fork is available at [my other repo](https://github.com/gaialucas/vtr-verilog-to-routing).
+This module works best in tandem with [Verilog-to-Routing](https://verilogtorouting.org/) and has two operation modes: Standalone simulation or VTR-integrated simulation. An already customized VTR fork is available at [my other repo](https://github.com/gaialucas/vtr-verilog-to-routing). If you intend to use it, please rember to checkout at my branch `gaia/fault_sim`.
 
 ## Memory cell types
 
